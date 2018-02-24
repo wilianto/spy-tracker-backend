@@ -1,0 +1,14 @@
+package: github.com/wilianto/spy-tracker-backend
+import:
+- package: github.com/urfave/negroni
+- package: github.com/gorilla/mux
+- package: github.com/mattes/migrate
+  subpackages:
+  - database/postgres
+  - source/file
+- package: github.com/spf13/viper
+- package: github.com/spf13/cobra/cobra
+
+testImport:
+- package: github.com/stretchr/testify
+- package: gopkg.in/DATA-DOG/go-sqlmock.v1
