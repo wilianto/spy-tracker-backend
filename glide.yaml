@@ -1,5 +1,6 @@
 package: github.com/wilianto/spy-tracker-backend
 import:
+- package: github.com/lib/pq
 - package: github.com/urfave/negroni
 - package: github.com/gorilla/mux
 - package: github.com/mattes/migrate
