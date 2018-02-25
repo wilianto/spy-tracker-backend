@@ -21,11 +21,11 @@ func TestStore(t *testing.T) {
 	}
 	defer db.Close()
 
-	query := "INSERT INTO users \\(username, password, name\\) VALUES \\(\\?, \\?, \\?\\)"
-	mock.ExpectPrepare(query).
-		ExpectExec().
+	query := "INSERT INTO users \\(username, password, name\\) VALUES \\(\\$1, \\$2, \\$3\\) RETURNING id"
+	rows := sqlmock.NewRows([]string{"id"}).AddRow("5")
+	mock.ExpectQuery(query).
 		WithArgs(usr.Username, usr.Password, usr.Name).
-		WillReturnResult(sqlmock.NewResult(5, 1))
+		WillReturnRows(rows)
 
 	repo := user.NewPsqlRepository(db)
 	lastID, err := repo.Store(usr)
