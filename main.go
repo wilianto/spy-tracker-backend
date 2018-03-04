@@ -36,14 +36,15 @@ func main() {
 		logrus.Fatalf("Error PING to DB: %s", err.Error())
 	}
 
+	//handler router
+	r := mux.NewRouter()
+
 	//user endpoint
 	userRepository := user.NewPsqlRepository(dbConn)
 	userService := user.NewService(userRepository)
-	userHandler := user.NewHTTPHandler(userService)
+	user.NewHTTPHandler(r, userService)
 
 	//start http server
 	logrus.Infof("Starting server on :%s", appPort)
-	r := mux.NewRouter()
-	r.HandleFunc("/users", userHandler.PostUser).Methods("POST")
 	logrus.Fatal(http.ListenAndServe(appPort, r))
 }

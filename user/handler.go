@@ -3,6 +3,8 @@ package user
 import (
 	"encoding/json"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 //HTTPHandler is a delivery layer for users via HTTP
@@ -23,9 +25,7 @@ func (h *userHTTPHandler) PostUser(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		resp = &postUserResponse{Error: err.Error()}
-		respBody, _ := json.Marshal(resp)
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write(respBody)
+		writeResponse(w, http.StatusBadRequest, resp)
 		return
 	}
 
@@ -38,17 +38,20 @@ func (h *userHTTPHandler) PostUser(w http.ResponseWriter, r *http.Request) {
 	userID, err := h.userService.Register(usr)
 	if err != nil {
 		resp = &postUserResponse{Error: err.Error()}
-		respBody, _ := json.Marshal(resp)
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write(respBody)
+		writeResponse(w, http.StatusUnprocessableEntity, resp)
 		return
 	}
 
 	resp = &postUserResponse{ID: userID}
-	respBody, _ := json.Marshal(resp)
-	w.WriteHeader(http.StatusCreated)
-	w.Write(respBody)
+	writeResponse(w, http.StatusCreated, resp)
 	return
+}
+
+func writeResponse(w http.ResponseWriter, code int, body *postUserResponse) {
+	respBody, _ := json.Marshal(body)
+	w.WriteHeader(code)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(respBody)
 }
 
 type postUserRequest struct {
@@ -58,11 +61,12 @@ type postUserRequest struct {
 }
 
 type postUserResponse struct {
-	ID    int64  `json:"id"`
-	Error string `json:"error"`
+	ID    int64  `json:"id,omitempty"`
+	Error string `json:"error,omitempty"`
 }
 
 //NewHTTPHandler initialize user handler with specific service
-func NewHTTPHandler(userService Service) HTTPHandler {
-	return &userHTTPHandler{userService}
+func NewHTTPHandler(r *mux.Router, userService Service) {
+	handler := userHTTPHandler{userService}
+	r.HandleFunc("/users", handler.PostUser).Methods("POST")
 }
