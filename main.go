@@ -40,8 +40,9 @@ func main() {
 	r := mux.NewRouter()
 
 	//user endpoint
+	userValidator := user.NewValidator()
 	userRepository := user.NewPsqlRepository(dbConn)
-	userService := user.NewService(userRepository)
+	userService := user.NewService(userRepository, userValidator)
 	user.NewHTTPHandler(r, userService)
 
 	//start http server
