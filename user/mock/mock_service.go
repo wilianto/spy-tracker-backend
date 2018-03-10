@@ -34,10 +34,10 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 }
 
 // Register mocks base method
-func (m *MockService) Register(arg0 *user.User) (int64, error) {
+func (m *MockService) Register(arg0 *user.User) (int64, []error) {
 	ret := m.ctrl.Call(m, "Register", arg0)
 	ret0, _ := ret[0].(int64)
-	ret1, _ := ret[1].(error)
+	ret1, _ := ret[1].([]error)
 	return ret0, ret1
 }
 

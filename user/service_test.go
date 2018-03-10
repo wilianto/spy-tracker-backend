@@ -21,14 +21,14 @@ func TestRegister_WhenSuccess(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockValidator := mock_user.NewMockValidator(ctrl)
-	mockValidator.EXPECT().Validate(gomock.Any()).Return(map[string]error{})
+	mockValidator.EXPECT().Validate(gomock.Any()).Return([]error{})
 
 	mockRepo := mock_user.NewMockRepository(ctrl)
 	mockRepo.EXPECT().Store(usr).Return(int64(2), nil)
 
 	service := user.NewService(mockRepo, mockValidator)
-	userID, err := service.Register(usr)
-	assert.NoError(t, err)
+	userID, errs := service.Register(usr)
+	assert.Len(t, errs, 0)
 	assert.Equal(t, int64(2), userID)
 }
 func TestRegister_WhenDataNotValid(t *testing.T) {
@@ -41,9 +41,7 @@ func TestRegister_WhenDataNotValid(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	validatorErrs := map[string]error{
-		"error": errors.New("Some error"),
-	}
+	validatorErrs := []error{errors.New("Some error")}
 	mockValidator := mock_user.NewMockValidator(ctrl)
 	mockValidator.EXPECT().Validate(gomock.Any()).Return(validatorErrs)
 
@@ -52,6 +50,6 @@ func TestRegister_WhenDataNotValid(t *testing.T) {
 
 	service := user.NewService(mockRepo, mockValidator)
 	userID, err := service.Register(usr)
-	assert.Error(t, err)
+	assert.Len(t, err, 1)
 	assert.Equal(t, int64(0), userID)
 }
