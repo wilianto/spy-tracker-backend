@@ -28,7 +28,7 @@ func TestPostUser_InvalidRequest(t *testing.T) {
 	user.NewHTTPHandler(router, mockUserService)
 	router.ServeHTTP(respRec, req)
 
-	expectedBodyResponse := `{"error":"unexpected EOF"}`
+	expectedBodyResponse := `{"errors":["unexpected EOF"]}`
 	assert.Equal(t, http.StatusBadRequest, respRec.Code)
 	assert.Equal(t, expectedBodyResponse, respRec.Body.String())
 }
@@ -58,7 +58,7 @@ func TestPostUser_Failed(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	mockUserService := mock_user.NewMockService(ctrl)
-	mockUserService.EXPECT().Register(gomock.Any()).Return(int64(0), errors.New("Duplicate"))
+	mockUserService.EXPECT().Register(gomock.Any()).Return(int64(0), []error{errors.New("Duplicate")})
 
 	params := `{
 		"username": "wilianto",
@@ -72,7 +72,7 @@ func TestPostUser_Failed(t *testing.T) {
 	user.NewHTTPHandler(router, mockUserService)
 	router.ServeHTTP(respRec, req)
 
-	expectedBodyResponse := `{"error":"Duplicate"}`
+	expectedBodyResponse := `{"errors":["Duplicate"]}`
 	assert.Equal(t, http.StatusUnprocessableEntity, respRec.Code)
 	assert.Equal(t, expectedBodyResponse, respRec.Body.String())
 }
