@@ -30,6 +30,7 @@ func TestPostUser_InvalidRequest(t *testing.T) {
 
 	expectedBodyResponse := `{"errors":["unexpected EOF"]}`
 	assert.Equal(t, http.StatusBadRequest, respRec.Code)
+	assert.Equal(t, "application/json", respRec.Header().Get("Content-Type"))
 	assert.Equal(t, expectedBodyResponse, respRec.Body.String())
 }
 func TestPostUser_Success(t *testing.T) {
@@ -52,6 +53,7 @@ func TestPostUser_Success(t *testing.T) {
 
 	expectedBodyResponse := `{"id":2}`
 	assert.Equal(t, http.StatusCreated, respRec.Code)
+	assert.Equal(t, "application/json", respRec.Header().Get("Content-Type"))
 	assert.Equal(t, expectedBodyResponse, respRec.Body.String())
 }
 func TestPostUser_Failed(t *testing.T) {
@@ -74,5 +76,6 @@ func TestPostUser_Failed(t *testing.T) {
 
 	expectedBodyResponse := `{"errors":["Duplicate"]}`
 	assert.Equal(t, http.StatusUnprocessableEntity, respRec.Code)
+	assert.Equal(t, "application/json", respRec.Header().Get("Content-Type"))
 	assert.Equal(t, expectedBodyResponse, respRec.Body.String())
 }

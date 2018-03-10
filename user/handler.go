@@ -66,8 +66,8 @@ func NewHTTPHandler(r *mux.Router, userService Service) {
 
 func writeResponse(w http.ResponseWriter, code int, body *postUserResponse) {
 	respBody, _ := json.Marshal(body)
-	w.WriteHeader(code)
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
 	w.Write(respBody)
 }
 
