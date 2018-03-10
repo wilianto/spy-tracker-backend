@@ -53,3 +53,26 @@ func TestRegister_WhenDataNotValid(t *testing.T) {
 	assert.Len(t, err, 1)
 	assert.Equal(t, int64(0), userID)
 }
+
+func TestRegister_WhenRepoFailed(t *testing.T) {
+	usr := &user.User{
+		Username: "duplicate",
+		Password: "hash_password",
+		Name:     "Wilianto Indrawan",
+	}
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockValidator := mock_user.NewMockValidator(ctrl)
+	mockValidator.EXPECT().Validate(gomock.Any()).Return([]error{})
+
+	repoError := errors.New("Username duplicated")
+	mockRepo := mock_user.NewMockRepository(ctrl)
+	mockRepo.EXPECT().Store(usr).Return(int64(0), repoError)
+
+	service := user.NewService(mockRepo, mockValidator)
+	userID, errs := service.Register(usr)
+	assert.Len(t, errs, 1)
+	assert.Equal(t, int64(0), userID)
+}
