@@ -20,24 +20,24 @@ var (
 
 //Validator validate data before save to repository
 type Validator interface {
-	Validate(user *User) map[string]error
+	Validate(user *User) []error
 }
 
 type userValidator struct{}
 
-func (v *userValidator) Validate(user *User) map[string]error {
-	errors := make(map[string]error)
+func (v *userValidator) Validate(user *User) []error {
+	errors := []error{}
 
 	if len(user.Username) < 4 {
-		errors["username"] = ErrInvalidUsername
+		errors = append(errors, ErrInvalidUsername)
 	}
 
 	if len(user.Name) < 4 {
-		errors["name"] = ErrInvalidName
+		errors = append(errors, ErrInvalidName)
 	}
 
 	if len(user.Password) < 8 {
-		errors["password"] = ErrInvalidPassword
+		errors = append(errors, ErrInvalidPassword)
 	}
 
 	return errors

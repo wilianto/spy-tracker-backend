@@ -34,9 +34,9 @@ func (m *MockValidator) EXPECT() *MockValidatorMockRecorder {
 }
 
 // Validate mocks base method
-func (m *MockValidator) Validate(arg0 *user.User) map[string]error {
+func (m *MockValidator) Validate(arg0 *user.User) []error {
 	ret := m.ctrl.Call(m, "Validate", arg0)
-	ret0, _ := ret[0].(map[string]error)
+	ret0, _ := ret[0].([]error)
 	return ret0
 }
 

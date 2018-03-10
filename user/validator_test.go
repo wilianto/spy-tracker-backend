@@ -10,17 +10,17 @@ import (
 func TestValidate(t *testing.T) {
 	testCases := []struct {
 		user   user.User
-		errors map[string]error
+		errors []error
 	}{
 		{
 			user.User{
 				Username: "",
 				Name:     "",
 				Password: "",
-			}, map[string]error{
-				"username": user.ErrInvalidUsername,
-				"name":     user.ErrInvalidName,
-				"password": user.ErrInvalidPassword,
+			}, []error{
+				user.ErrInvalidUsername,
+				user.ErrInvalidName,
+				user.ErrInvalidPassword,
 			},
 		},
 		{
@@ -28,21 +28,21 @@ func TestValidate(t *testing.T) {
 				Username: "no",
 				Name:     "Valid Name",
 				Password: "valid_password",
-			}, map[string]error{"username": user.ErrInvalidUsername},
+			}, []error{user.ErrInvalidUsername},
 		},
 		{
 			user.User{
 				Username: "valid",
 				Name:     "no",
 				Password: "valid_password",
-			}, map[string]error{"name": user.ErrInvalidName},
+			}, []error{user.ErrInvalidName},
 		},
 		{
 			user.User{
 				Username: "valid",
 				Name:     "Valid Name",
 				Password: "short",
-			}, map[string]error{"password": user.ErrInvalidPassword},
+			}, []error{user.ErrInvalidPassword},
 		},
 	}
 
